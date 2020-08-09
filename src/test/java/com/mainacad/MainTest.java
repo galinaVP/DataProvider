@@ -8,20 +8,27 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 
 public class MainTest
 {
-    //Пример DataProvider метода
     @DataProvider
-    public Object[] myDataProvider(){
-        return new Object[]{
-                "Data 1 from my data provider",
-                "Data 2 from my data provider",
-                "Data 3 from my data provider",
-                "Data 4 from my data provider",
-                "Data 5 from my data provider"
-        };
+    public Object[] myDataProvider() throws FileNotFoundException {
+        Scanner sc = new Scanner(new File("deviceList.txt"));
+
+        List<String> lines = new ArrayList<String>();
+        while (sc.hasNextLine()) {
+            lines.add(sc.nextLine());
+        }
+        String[] arr = lines.toArray(new String[0]);
+        return arr;
     }
+
 
     //Пример теста с использованием DataProvider
     @Test(dataProvider = "myDataProvider")
@@ -31,9 +38,6 @@ public class MainTest
         Assert.assertTrue( true );
     }
 
-
-
-
     //TODO: Напишите @DataProvider метод
     // метод должен считать данные из файла deviceList.txt и привести их к типу Object[]
     // справка для чтения файла: https://stackoverflow.com/questions/2977075/java-how-to-read-a-txt-file-to-an-array-of-strings
@@ -42,10 +46,10 @@ public class MainTest
     //TODO: Перепишите тест testGoogleSearch с использованием @DataProvider
     // Тест должен выполнится для каждого девайса из списка в deviceList.txt
 
-    @Test()
-    public void testGoogleSearch() throws InterruptedException {
+    @Test(dataProvider = "myDataProvider")
+    public void testGoogleSearch(String provider) throws InterruptedException {
         //Передаём девайс для эмуляции и создаём драйвер
-        WebDriver driver = Main.getDriver("Nexus 10");
+        WebDriver driver = Main.getDriver(provider);
 
         driver.get("http://www.google.com/xhtml");
         Thread.sleep(3000);
